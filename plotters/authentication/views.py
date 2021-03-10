@@ -14,7 +14,6 @@ class RegisterApi(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         current_user = self.request.user
-        print(current_user)
         if current_user.is_superuser:
             group, created = Group.objects.get_or_create(name="Dealer")
             group.user_set.add(user)
