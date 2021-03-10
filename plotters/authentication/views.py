@@ -13,8 +13,17 @@ class RegisterApi(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        group, created = Group.objects.get_or_create(name="Customer")
-        group.user_set.add(user)
+        current_user = self.request.user
+        print(current_user)
+        if current_user.is_superuser:
+            group, created = Group.objects.get_or_create(name="Dealer")
+            group.user_set.add(user)
+        elif current_user.groups.filter(name='Dealer').exists():
+            group, created = Group.objects.get_or_create(name="Customer")
+            group.user_set.add(user)
+        else:
+            group, created = Group.objects.get_or_create(name="Customer")
+            group.user_set.add(user)
         return Response({
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "message": "User Created Successfully.  Now perform Login to get your token",
