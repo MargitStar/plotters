@@ -28,11 +28,11 @@ ALLOWED_HOSTS = []
 
 # Application definition
 THIRD_PARTY_APPS = [
-    'rest_framework'
+    'rest_framework',
 ]
 
 MY_APPS = [
-
+    'authentication',
 ]
 
 INSTALLED_APPS = [
@@ -111,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
 
