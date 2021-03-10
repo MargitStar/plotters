@@ -1,11 +1,11 @@
-from rest_framework.generics import get_object_or_404
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from datetime import datetime
 from rest_framework.permissions import IsAuthenticated
 from django.db.utils import IntegrityError
+from django.contrib.auth.models import Group
 
-from .models import Plotter, User
+from .models import Plotter
 from .serializers import PlotterSerializer
 
 
@@ -13,8 +13,14 @@ class PlotterView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        snippets = Plotter.objects.filter().all()
-        serializer = PlotterSerializer(snippets, many=True, context={'request': request})
+        user = self.request.user
+        print(user)
+        if user.groups.filter(name='Dealer').exists() or user.is_superuser:
+            snippets = Plotter.objects.filter().all()
+            serializer = PlotterSerializer(snippets, many=True, context={'request': request})
+        else:
+            snippets = Plotter.objects.filter(user=user.pk).all()
+            serializer = PlotterSerializer(snippets, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
