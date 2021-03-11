@@ -36,7 +36,8 @@ class PlotterView(APIView):
 class PlotterDetailView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get_object(self, pk):
+    @staticmethod
+    def get_object(pk):
         try:
             return Plotter.objects.get(pk=pk)
         except Plotter.DoesNotExist:
