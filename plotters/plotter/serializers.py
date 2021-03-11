@@ -18,3 +18,15 @@ class PlotterSerializer(serializers.Serializer):
             user_ = User.objects.get(pk=current.get('id'))
             plotter.user.add(user_)
         return plotter
+
+    @staticmethod
+    def unpack_dict(dictionary):
+        for key, value in dictionary.items():
+            return value
+
+    def update(self, instance, validated_data):
+        new_instances = validated_data.get('user')
+        for inst in new_instances:
+            instance.user.add(self.unpack_dict(inst))
+        instance.save()
+        return instance
