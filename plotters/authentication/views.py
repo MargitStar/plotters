@@ -32,8 +32,16 @@ class RegisterApi(generics.GenericAPIView):
 class UserApi(APIView):
 
     def get(self, request, *args, **kwargs):
-        snippets = User.objects.filter(pk=request.user.pk).all()
-        serializer = UserSerializer(snippets, many=True)
+        current_user = request.user
+        if current_user.is_superuser:
+            user = User.objects.filter().all()
+            serializer = UserSerializer(user, many=True)
+        elif current_user.groups.filter(name='Dealer').exists():
+            pass
+        else:
+            if not current_user.is_anonymous:
+                user = User.objects.filter(pk=current_user.pk).first()
+                serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):
