@@ -14,18 +14,16 @@ class PlotterView(APIView):
 
     def get(self, request):
         user = self.request.user
-        print(user)
         if user.groups.filter(name='Dealer').exists() or user.is_superuser:
             snippets = Plotter.objects.filter().all()
             serializer = PlotterSerializer(snippets, many=True, context={'request': request})
         else:
-            # TODO: Check if the user exists
-            snippets = Plotter.objects.filter(user=user.pk).all()
-            serializer = PlotterSerializer(snippets, many=True, context={'request': request})
+            if not user.is_anonymous:
+                snippets = Plotter.objects.filter(user=user.pk).all()
+                serializer = PlotterSerializer(snippets, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        # user = request.POST.get('user')
         serializer = PlotterSerializer(data=request.data)
         try:
             if serializer.is_valid(raise_exception=True):
