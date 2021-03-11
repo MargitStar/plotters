@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('mold/', include('mold.urls', namespace='molds')),
     path('plotter/', include('plotter.urls', namespace='plotters')),
     path('api/', include('authentication.urls', namespace='registration')),
     path('admin/', admin.site.urls),
