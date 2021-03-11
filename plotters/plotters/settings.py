@@ -33,7 +33,8 @@ THIRD_PARTY_APPS = [
 
 MY_APPS = [
     'authentication',
-    'plotter'
+    'plotter',
+    'mold'
 ]
 
 INSTALLED_APPS = [
