@@ -27,7 +27,11 @@ class PlotterSerializer(serializers.Serializer):
     # TODO: updating not adding users
     def update(self, instance, validated_data):
         new_instances = validated_data.get('user')
-        for inst in new_instances:
-            instance.user.add(self.unpack_dict(inst))
-        instance.save()
-        return instance
+        try:
+            for inst in new_instances:
+                instance.user.clear()
+                instance.user.add(self.unpack_dict(inst))
+            instance.save()
+            return instance
+        except TypeError:
+            pass
