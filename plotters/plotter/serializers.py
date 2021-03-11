@@ -24,7 +24,6 @@ class PlotterSerializer(serializers.Serializer):
         for key, value in dictionary.items():
             return value
 
-    # TODO: updating not adding users
     def update(self, instance, validated_data):
         new_instances = validated_data.get('user')
         try:
