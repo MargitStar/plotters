@@ -27,3 +27,21 @@ class MoldView(APIView):
                     return Response({"success": order_saved.pk})
             except IntegrityError:
                 return Response("This Mold already exists!")
+
+
+class MoldDetailView(APIView):
+
+    @staticmethod
+    def get_object(pk):
+        try:
+            return Mold.objects.get(pk=pk)
+        except Mold.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        mold = self.get_object(pk)
+        try:
+            serializer = MoldSerializer(mold)
+            return Response(serializer.data)
+        except mold.DoesNotExist:
+            raise Http404
