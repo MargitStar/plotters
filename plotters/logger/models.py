@@ -30,7 +30,7 @@ class Cutout(models.Model):
     )
 
     created_date = models.DateTimeField(
-        default=datetime.datetime.now()
+        'Time',
     )
 
 
