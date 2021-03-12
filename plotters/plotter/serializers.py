@@ -33,4 +33,6 @@ class PlotterSerializer(serializers.Serializer):
             instance.save()
             return instance
         except TypeError:
-            pass
+            instance.user.clear()
+            instance.save()
+            return instance
