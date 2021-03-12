@@ -59,5 +59,13 @@ class MoldDetailView(APIView):
                 return Response('This mold already exists')
 
         return Response("User has no permission")
-    #
-    # def delete
+
+    def delete(self, request, pk, format=None):
+        user = self.request.user
+        if user.is_superuser:
+            mold = self.get_object(pk)
+            try:
+                mold.delete()
+                return Response("Mold was deleted successfully", status=status.HTTP_204_NO_CONTENT)
+            except mold.DoesNotExist:
+                return Response('There is no such an item')
