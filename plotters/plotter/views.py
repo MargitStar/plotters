@@ -24,7 +24,11 @@ class PlotterView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PlotterSerializer(data=request.data)
+        user = self.request.user
+        if user.is_superuser or user.groups.filter(name='Dealer').exists():
+            serializer = PlotterSerializer(data=request.data)
+        else:
+            return Response("User has no permission")
         try:
             if serializer.is_valid(raise_exception=True):
                 order_saved = serializer.save()
