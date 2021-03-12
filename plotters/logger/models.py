@@ -34,3 +34,18 @@ class Cutout(models.Model):
 
 class CutoutAdmin(admin.ModelAdmin):
     list_display = ['user', 'plotter', 'mold', 'created_date']
+
+
+class MoldStatistics(models.Model):
+    plotter = models.ForeignKey(
+        Plotter,
+        on_delete=models.PROTECT,
+    )
+
+    mold = models.ForeignKey(
+        Mold,
+        on_delete=models.PROTECT,
+    )
+
+    cutouts = models.IntegerField(
+    )
