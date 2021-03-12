@@ -9,4 +9,4 @@ class Mold(models.Model):
     )
 
     def __str__(self):
-        return f"Mold f{self.name}"
+        return f"Mold {self.name}"
