@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.utils import IntegrityError
 from django.http import Http404
 
-from .models import Cutout
-from .serializers import CutoutPostSerializer, CutoutGetSerializer
+from .models import Cutout, MoldStatistics
+from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer
 
 
 class CutoutView(APIView):
@@ -31,8 +31,13 @@ class CutoutView(APIView):
             if user.groups.filter(name='Customer').exists():
                 try:
                     serializer = CutoutPostSerializer(data=request.data)
-                    if serializer.is_valid(raise_exception=True):
+                    mold_serializer = MoldSerializer(data=request.data)
+                    print(request.data)
+                    if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(raise_exception=True):
                         cutout = serializer.save(user=self.request.user, created_date=datetime.now())
+                        cutout_amount = len(
+                            Cutout.objects.filter(mold=request.data['mold_id'], plotter=request.data['plotter_id']))
+                        mold = mold_serializer.save(cutouts=cutout_amount)
                         return Response({"success": cutout.pk})
                 except IntegrityError:
                     return Response("This plotter or mold does not exist")
@@ -66,3 +71,10 @@ class CutoutDetailView(APIView):
             return Response(serializer.data)
         except mold.DoesNotExist:
             raise Http404
+
+#
+# class MoldView(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     # def get(self, request):
+#     #     pass
