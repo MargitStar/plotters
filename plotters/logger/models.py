@@ -1,8 +1,11 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib import admin
+
 from plotter.models import Plotter
 from mold.models import Mold
-import datetime
 
 User = get_user_model()
 
@@ -29,3 +32,7 @@ class Cutout(models.Model):
     created_date = models.DateTimeField(
         default=datetime.datetime.now()
     )
+
+
+class CutoutAdmin(admin.ModelAdmin):
+    list_display = ['user', 'plotter', 'mold', 'created_date']
