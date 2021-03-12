@@ -1,11 +1,13 @@
-from rest_framework.generics import get_object_or_404
+from datetime import datetime
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Cutout
-from datetime import datetime
-from .serializers import CutoutPostSerializer, CutoutGetSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.db.utils import IntegrityError
+from django.http import Http404
+
+from .models import Cutout
+from .serializers import CutoutPostSerializer, CutoutGetSerializer
 
 
 class CutoutView(APIView):
@@ -36,3 +38,31 @@ class CutoutView(APIView):
                     return Response("This plotter or mold does not exist")
         except PermissionError:
             return Response("User has no permission")
+
+
+class CutoutDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def get_object(pk):
+        try:
+            return Cutout.objects.get(pk=pk)
+        except Cutout.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        user = self.request.user
+        mold = self.get_object(pk)
+        try:
+            if user.is_superuser:
+                serializer = CutoutGetSerializer(mold)
+            elif user.groups.filter(name="Dealer").exists():
+                pass
+            else:
+                if user == mold.user:
+                    serializer = CutoutGetSerializer(mold)
+                else:
+                    return Response("User has no permission")
+            return Response(serializer.data)
+        except mold.DoesNotExist:
+            raise Http404
