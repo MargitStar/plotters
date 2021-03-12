@@ -34,7 +34,8 @@ THIRD_PARTY_APPS = [
 MY_APPS = [
     'authentication',
     'plotter',
-    'mold'
+    'mold',
+    'logger'
 ]
 
 INSTALLED_APPS = [
@@ -57,7 +58,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'plotters.urls'
-
 
 TEMPLATES = [
     {
