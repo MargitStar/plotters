@@ -49,3 +49,7 @@ class MoldStatistics(models.Model):
 
     cutouts = models.IntegerField(
     )
+
+
+class MoldStatisticsAdmin(admin.ModelAdmin):
+    list_display = ['plotter', 'mold', 'cutouts']
