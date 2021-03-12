@@ -7,6 +7,7 @@ from django.db.utils import IntegrityError
 from django.http import Http404
 
 from .models import Cutout, MoldStatistics
+from plotter.models import Plotter
 from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer
 
 
@@ -30,14 +31,15 @@ class CutoutView(APIView):
         try:
             if user.groups.filter(name='Customer').exists():
                 try:
-                    serializer = CutoutPostSerializer(data=request.data)
-                    mold_serializer = MoldSerializer(data=request.data)
-                    print(request.data)
+                    plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
+                    if user in plotter.user.all():
+                        serializer = CutoutPostSerializer(data=request.data)
+                        mold_serializer = MoldSerializer(data=request.data)
+                    else:
+                        return Response("User has no permission!")
                     if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(raise_exception=True):
                         cutout = serializer.save(user=self.request.user, created_date=datetime.now())
-                        cutout_amount = len(
-                            Cutout.objects.filter(mold=request.data['mold_id'], plotter=request.data['plotter_id']))
-                        mold = mold_serializer.save(cutouts=cutout_amount)
+                        mold = mold_serializer.save()
                         return Response({"success": cutout.pk})
                 except IntegrityError:
                     return Response("This plotter or mold does not exist")
@@ -72,9 +74,9 @@ class CutoutDetailView(APIView):
         except mold.DoesNotExist:
             raise Http404
 
-#
-# class MoldView(APIView):
-#     permission_classes = (IsAuthenticated,)
-#
-#     # def get(self, request):
-#     #     pass
+
+class MoldView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    # def get(self, request):
+    #     pass
