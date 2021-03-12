@@ -7,3 +7,8 @@ class MoldSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return Mold.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name')
+        instance.save()
+        return instance

@@ -45,3 +45,19 @@ class MoldDetailView(APIView):
             return Response(serializer.data)
         except mold.DoesNotExist:
             raise Http404
+
+    def put(self, request, pk, format=None):
+        user = self.request.user
+        mold = self.get_object(pk)
+        if user.is_superuser:
+            try:
+                serializer = MoldSerializer(mold, data=request.data, partial=True)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response(serializer.data)
+            except IntegrityError:
+                return Response('This mold already exists')
+
+        return Response("User has no permission")
+    #
+    # def delete
