@@ -25,8 +25,11 @@ class MoldSerializer(serializers.Serializer):
     mold_id = serializers.IntegerField()
 
     def create(self, validated_data):
-        plotter_id = serializers.IntegerField()
-        mold_id = serializers.IntegerField()
+        plotter_id = validated_data.get('plotter_id')
+        mold_id = validated_data.get('mold_id')
+        cutout_amount = len(
+            Cutout.objects.filter(mold=mold_id, plotter=plotter_id))
+        MoldStatistics.objects.filter(mold=mold_id, plotter=plotter_id).delete()
+        cutout, _ = MoldStatistics.objects.get_or_create(**validated_data, cutouts=cutout_amount)
 
-        cutout = MoldStatistics.objects.create(**validated_data)
         return cutout
