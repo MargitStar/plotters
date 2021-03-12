@@ -61,11 +61,14 @@ class PlotterDetailView(APIView):
     def put(self, request, pk, format=None):
         user = self.request.user
         plotter = self.get_object(pk)
-        if user.groups.filter(name='Dealer').exists() or user.is_superuser:
-            serializer = PlotterSerializer(plotter, data=request.data, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data)
+        try:
+            if user.groups.filter(name='Dealer').exists() or user.is_superuser:
+                serializer = PlotterSerializer(plotter, data=request.data, partial=True)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response(serializer.data)
+        except IntegrityError:
+            return Response('This plotter already exists')
 
         return Response("User has no permission")
 
