@@ -32,3 +32,9 @@ class MoldSerializer(serializers.Serializer):
         MoldStatistics.objects.filter(mold=mold_id, plotter=plotter_id).delete()
         cutout, _ = MoldStatistics.objects.get_or_create(**validated_data, cutouts=cutout_amount)
         return cutout
+
+
+class MoldGetSerializer(serializers.Serializer):
+    plotter_id = serializers.IntegerField()
+    mold_id = serializers.IntegerField()
+    cutouts = serializers.IntegerField()

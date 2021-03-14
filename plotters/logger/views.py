@@ -8,7 +8,7 @@ from django.http import Http404
 
 from .models import Cutout, MoldStatistics
 from plotter.models import Plotter
-from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer
+from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer, MoldGetSerializer
 
 
 class CutoutView(APIView):
@@ -32,6 +32,7 @@ class CutoutView(APIView):
             if user.groups.filter(name='Customer').exists():
                 try:
                     plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
+                    print(request.META.get('REMOTE_ADDR'))
                     if user in plotter.user.all():
                         serializer = CutoutPostSerializer(data=request.data)
                         mold_serializer = MoldSerializer(data=request.data)
@@ -78,5 +79,11 @@ class CutoutDetailView(APIView):
 class MoldView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    # def get(self, request):
-    #     pass
+    def get(self, request):
+        user = request.user
+        if user.is_superuser:
+            snippets = MoldStatistics.objects.all()
+            serializer = MoldGetSerializer(snippets, many=True, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response("User has no permission!")
