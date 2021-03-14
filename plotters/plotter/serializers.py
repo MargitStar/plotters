@@ -9,6 +9,7 @@ class UserSerializer(serializers.Serializer):
 class PlotterSerializer(serializers.Serializer):
     serial_number = serializers.CharField(max_length=150)
     user = UserSerializer(many=True)
+    ip = serializers.IPAddressField()
 
     def create(self, validated_data):
         user = validated_data.pop('user', [])
@@ -26,6 +27,7 @@ class PlotterSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         new_instances = validated_data.get('user')
+        instance.ip = validated_data.get('ip')
         try:
             for inst in new_instances:
                 instance.user.clear()

@@ -14,6 +14,10 @@ class Plotter(models.Model):
         User,
     )
 
+    ip = models.GenericIPAddressField(
+        default='127.0.0.1'
+    )
+
     def users(self):
         return ",".join([str(user) for user in self.user.all()])
 
@@ -22,5 +26,5 @@ class Plotter(models.Model):
 
 
 class PlotterAdmin(admin.ModelAdmin):
-    list_display = ['serial_number', 'users']
+    list_display = ['serial_number', 'users', 'ip']
     list_display_links = ['serial_number']
