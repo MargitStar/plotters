@@ -13,9 +13,6 @@ class CutoutPostSerializer(serializers.Serializer):
     mold_id = serializers.IntegerField()
 
     def create(self, validated_data):
-        plotter_id = serializers.IntegerField()
-        mold_id = serializers.IntegerField()
-
         cutout = Cutout.objects.create(**validated_data)
         return cutout
 
