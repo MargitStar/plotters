@@ -28,26 +28,25 @@ class CutoutView(APIView):
 
     def post(self, request):
         user = request.user
-        try:
-            if user.groups.filter(name='Customer').exists():
-                try:
+        if user.groups.filter(name='Customer').exists():
+            try:
+                plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
+                if user in plotter.user.all():
+                    serializer = CutoutPostSerializer(data=request.data)
+                    mold_serializer = MoldSerializer(data=request.data)
+                    plotter_serializer = PlotterSerializer(data=request.data)
+                else:
+                    return Response("User has no permission!")
+                if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(
+                        raise_exception=True) and plotter_serializer.is_valid(raise_exception=True):
+                    cutout = serializer.save(user=self.request.user, created_date=datetime.now())
+                    mold = mold_serializer.save()
                     plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
-                    if user in plotter.user.all():
-                        serializer = CutoutPostSerializer(data=request.data)
-                        mold_serializer = MoldSerializer(data=request.data)
-                        plotter_serializer = PlotterSerializer(data=request.data)
-                    else:
-                        return Response("User has no permission!")
-                    if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(
-                            raise_exception=True) and plotter_serializer.is_valid(raise_exception=True):
-                        cutout = serializer.save(user=self.request.user, created_date=datetime.now())
-                        mold = mold_serializer.save()
-                        plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
-                        plotter_statistics = plotter_serializer.save(ip=plotter.ip)
-                        return Response({"success": cutout.pk})
-                except IntegrityError:
-                    return Response("This plotter or mold does not exist")
-        except PermissionError:
+                    plotter_statistics = plotter_serializer.save(ip=plotter.ip)
+                    return Response({"success": cutout.pk})
+            except IntegrityError:
+                return Response("This plotter or mold does not exist")
+        else:
             return Response("User has no permission")
 
 
