@@ -39,11 +39,15 @@ class CutoutView(APIView):
                     return Response("User has no permission!")
                 if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(
                         raise_exception=True) and plotter_serializer.is_valid(raise_exception=True):
-                    cutout = serializer.save(user=self.request.user, created_date=datetime.now())
-                    mold = mold_serializer.save()
-                    plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
-                    plotter_statistics = plotter_serializer.save(ip=plotter.ip)
-                    return Response({"success": cutout.pk})
+                    if plotter.cutouts >= request.data['amount']:
+                        cutout = serializer.save(user=self.request.user, created_date=datetime.now())
+                        mold = mold_serializer.save()
+                        plotter_statistics = plotter_serializer.save(ip=plotter.ip)
+                        plotter.cutouts -= request.data['amount']
+                        plotter.save()
+                        return Response({"success": cutout.pk})
+                    else:
+                        return Response(f'You can cut out only {plotter.cutouts}')
             except IntegrityError:
                 return Response("This plotter or mold does not exist")
         else:
