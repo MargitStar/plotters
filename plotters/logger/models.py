@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib import admin
@@ -53,3 +54,20 @@ class MoldStatistics(models.Model):
 
 class MoldStatisticsAdmin(admin.ModelAdmin):
     list_display = ['plotter', 'mold', 'cutouts']
+
+
+class PlotterStatistics(models.Model):
+    plotter = models.ForeignKey(
+        Plotter,
+        on_delete=models.PROTECT,
+    )
+
+    ip = models.GenericIPAddressField(
+
+    )
+
+    cutouts = models.IntegerField()
+
+
+class PlotterStatisticsAdmin(admin.ModelAdmin):
+    list_display = ['plotter', 'ip', 'cutouts']

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cutout, MoldStatistics
+from .models import Cutout, MoldStatistics, PlotterStatistics
 
 
 class CutoutGetSerializer(serializers.Serializer):
@@ -38,3 +38,14 @@ class MoldGetSerializer(serializers.Serializer):
     plotter_id = serializers.IntegerField()
     mold_id = serializers.IntegerField()
     cutouts = serializers.IntegerField()
+
+
+class PlotterSerializer(serializers.Serializer):
+    plotter_id = serializers.IntegerField()
+
+    def create(self, validated_data):
+        plotter_id = validated_data.get('plotter_id')
+        cutout_amount = len(Cutout.objects.filter(plotter=plotter_id))
+        PlotterStatistics.objects.filter(plotter=plotter_id).delete()
+        statistics, _ = PlotterStatistics.objects.get_or_create(**validated_data, cutouts=cutout_amount)
+        return statistics

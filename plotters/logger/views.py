@@ -6,9 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.utils import IntegrityError
 from django.http import Http404
 
-from .models import Cutout, MoldStatistics
+from .models import Cutout, MoldStatistics, PlotterStatistics
 from plotter.models import Plotter
-from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer, MoldGetSerializer
+from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer, MoldGetSerializer, PlotterSerializer
 
 
 class CutoutView(APIView):
@@ -32,15 +32,18 @@ class CutoutView(APIView):
             if user.groups.filter(name='Customer').exists():
                 try:
                     plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
-                    print(request.META.get('REMOTE_ADDR'))
                     if user in plotter.user.all():
                         serializer = CutoutPostSerializer(data=request.data)
                         mold_serializer = MoldSerializer(data=request.data)
+                        plotter_serializer = PlotterSerializer(data=request.data)
                     else:
                         return Response("User has no permission!")
-                    if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(raise_exception=True):
+                    if serializer.is_valid(raise_exception=True) and mold_serializer.is_valid(
+                            raise_exception=True) and plotter_serializer.is_valid(raise_exception=True):
                         cutout = serializer.save(user=self.request.user, created_date=datetime.now())
                         mold = mold_serializer.save()
+                        plotter = Plotter.objects.filter(id=request.data['plotter_id']).first()
+                        plotter_statistics = plotter_serializer.save(ip=plotter.ip)
                         return Response({"success": cutout.pk})
                 except IntegrityError:
                     return Response("This plotter or mold does not exist")
