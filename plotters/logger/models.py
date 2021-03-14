@@ -28,13 +28,17 @@ class Cutout(models.Model):
         related_name='mold'
     )
 
+    amount = models.IntegerField(
+        default=0,
+    )
+
     created_date = models.DateTimeField(
         'Time',
     )
 
 
 class CutoutAdmin(admin.ModelAdmin):
-    list_display = ['user', 'plotter', 'mold', 'created_date']
+    list_display = ['user', 'plotter', 'mold', 'created_date', 'amount']
 
 
 class MoldStatistics(models.Model):
@@ -67,6 +71,10 @@ class PlotterStatistics(models.Model):
     )
 
     cutouts = models.IntegerField()
+
+    last_cutout_date = models.DateField(
+        default=date.today
+    )
 
 
 class PlotterStatisticsAdmin(admin.ModelAdmin):
