@@ -18,6 +18,11 @@ class Plotter(models.Model):
         default='127.0.0.1'
     )
 
+    cutouts = models.IntegerField(
+        "Allowed cutouts",
+        default=0
+    )
+
     def users(self):
         return ",".join([str(user) for user in self.user.all()])
 
@@ -26,5 +31,5 @@ class Plotter(models.Model):
 
 
 class PlotterAdmin(admin.ModelAdmin):
-    list_display = ['serial_number', 'users', 'ip']
+    list_display = ['serial_number', 'users', 'ip', 'cutouts']
     list_display_links = ['serial_number']
