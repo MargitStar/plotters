@@ -8,10 +8,14 @@ from django.http import Http404
 from .models import Plotter
 from .serializers import PlotterSerializer
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 
 class PlotterView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_description='Get Plotters', responses={200: PlotterSerializer()})
     def get(self, request):
         user = self.request.user
         if user.groups.filter(name='Dealer').exists() or user.is_superuser:
@@ -23,6 +27,14 @@ class PlotterView(APIView):
                 serializer = PlotterSerializer(snippets, many=True, context={'request': request})
         return Response(serializer.data)
 
+    serial_number = openapi.Parameter('serial_number', openapi.IN_QUERY, description="serial_number",
+                                      type=openapi.TYPE_STRING)
+    user = openapi.Parameter('user', openapi.IN_QUERY, description="user",
+                             type=openapi.TYPE_INTEGER)
+    ip = openapi.Parameter('ip', openapi.IN_QUERY, description="ip", type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(operation_description='Post Plotter', responses={200: PlotterSerializer()},
+                         manual_parameters=[serial_number, user, ip])
     def post(self, request):
         user = self.request.user
         if user.is_superuser or user.groups.filter(name='Dealer').exists():
@@ -47,6 +59,7 @@ class PlotterDetailView(APIView):
         except Plotter.DoesNotExist:
             raise Http404
 
+    @swagger_auto_schema(operation_description='Get particular Plotter', responses={200: PlotterSerializer()})
     def get(self, request, pk, format=None):
         user = self.request.user
         plotter = self.get_object(pk)
@@ -62,6 +75,7 @@ class PlotterDetailView(APIView):
 
         return Response(serializer.data)
 
+    @swagger_auto_schema(operation_description='Put particular Plotter', responses={200: PlotterSerializer()})
     def put(self, request, pk, format=None):
         user = self.request.user
         plotter = self.get_object(pk)
@@ -76,6 +90,7 @@ class PlotterDetailView(APIView):
 
         return Response("User has no permission")
 
+    @swagger_auto_schema(operation_description='Delete particular Plotter', responses={200: PlotterSerializer()})
     def delete(self, request, pk, format=None):
         user = self.request.user
         if user.is_superuser:

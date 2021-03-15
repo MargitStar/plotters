@@ -8,10 +8,14 @@ from django.http import Http404
 from .models import Mold
 from .serializers import MoldSerializer
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 
 class MoldView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_description='Get Molds', responses={200: MoldSerializer()})
     def get(self, request):
         snippets = Mold.objects.filter().all()
         serializer = MoldSerializer(snippets, many=True, context={'request': request})
@@ -38,6 +42,7 @@ class MoldDetailView(APIView):
         except Mold.DoesNotExist:
             raise Http404
 
+    @swagger_auto_schema(operation_description='Get Particular Mold', responses={200: MoldSerializer()})
     def get(self, request, pk, format=None):
         mold = self.get_object(pk)
         try:
@@ -46,6 +51,7 @@ class MoldDetailView(APIView):
         except mold.DoesNotExist:
             raise Http404
 
+    @swagger_auto_schema(operation_description='Put Particular Mold', responses={200: MoldSerializer()})
     def put(self, request, pk, format=None):
         user = self.request.user
         mold = self.get_object(pk)
@@ -60,6 +66,7 @@ class MoldDetailView(APIView):
 
         return Response("User has no permission")
 
+    @swagger_auto_schema(operation_description='Put Particular Mold', responses={204: 'Mold successfully deleted'})
     def delete(self, request, pk, format=None):
         user = self.request.user
         if user.is_superuser:

@@ -2,8 +2,11 @@ from rest_framework import serializers
 from .models import Plotter, User
 
 
-class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id',)
+        ref_name = "User2"
 
 
 class PlotterSerializer(serializers.Serializer):
