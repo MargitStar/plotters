@@ -61,6 +61,12 @@ class MoldStatisticsAdmin(admin.ModelAdmin):
 
 
 class PlotterStatistics(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        default=1
+    )
+
     plotter = models.ForeignKey(
         Plotter,
         on_delete=models.PROTECT,

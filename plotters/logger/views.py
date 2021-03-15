@@ -57,7 +57,8 @@ class CutoutView(APIView):
                     if plotter.cutouts >= request.data['amount'] != 0:
                         cutout = serializer.save(user=self.request.user, created_date=datetime.now())
                         mold = mold_serializer.save()
-                        plotter_statistics = plotter_serializer.save(ip=plotter.ip, last_cutout_date=date.today())
+                        plotter_statistics = plotter_serializer.save(user=user, ip=plotter.ip,
+                                                                     last_cutout_date=date.today())
                         plotter.cutouts -= request.data['amount']
                         plotter.save()
                         return Response({"success": cutout.pk})
@@ -122,6 +123,10 @@ class PlotterView(APIView):
         user = request.user
         if user.is_superuser:
             snippets = PlotterStatistics.objects.all()
+            serializer = PlotterGetSerializer(snippets, many=True, context={'request': request})
+            return Response(serializer.data)
+        elif user.groups.filter(name="Customer").exists():
+            snippets = PlotterStatistics.objects.filter(user=user).all()
             serializer = PlotterGetSerializer(snippets, many=True, context={'request': request})
             return Response(serializer.data)
         else:
