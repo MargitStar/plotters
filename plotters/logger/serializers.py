@@ -52,3 +52,9 @@ class PlotterSerializer(serializers.Serializer):
         PlotterStatistics.objects.filter(plotter=plotter_id).delete()
         statistics, _ = PlotterStatistics.objects.get_or_create(**validated_data, cutouts=result)
         return statistics
+
+class PlotterGetSerializer(serializers.Serializer):
+    plotter_id = serializers.IntegerField()
+    ip = serializers.IPAddressField()
+    cutouts = serializers.IntegerField()
+    last_cutout_date = serializers.DateField()

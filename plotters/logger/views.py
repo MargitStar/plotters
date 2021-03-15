@@ -8,7 +8,8 @@ from django.http import Http404
 
 from .models import Cutout, MoldStatistics, PlotterStatistics
 from plotter.models import Plotter
-from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer, MoldGetSerializer, PlotterSerializer
+from .serializers import CutoutPostSerializer, CutoutGetSerializer, MoldSerializer, MoldGetSerializer, \
+    PlotterSerializer, PlotterGetSerializer
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -108,6 +109,20 @@ class MoldView(APIView):
         if user.is_superuser:
             snippets = MoldStatistics.objects.all()
             serializer = MoldGetSerializer(snippets, many=True, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response("User has no permission!")
+
+
+class PlotterView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @swagger_auto_schema(operation_description='Get mold statistics', responses={200: CutoutGetSerializer()})
+    def get(self, request):
+        user = request.user
+        if user.is_superuser:
+            snippets = PlotterStatistics.objects.all()
+            serializer = PlotterGetSerializer(snippets, many=True, context={'request': request})
             return Response(serializer.data)
         else:
             return Response("User has no permission!")
