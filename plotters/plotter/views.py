@@ -21,11 +21,12 @@ class PlotterView(APIView):
         if user.groups.filter(name='Dealer').exists() or user.is_superuser:
             snippets = Plotter.objects.filter().all()
             serializer = PlotterSerializer(snippets, many=True, context={'request': request})
+            return Response(serializer.data)
         else:
             if not user.is_anonymous:
                 snippets = Plotter.objects.filter(user=user.pk).all()
                 serializer = PlotterSerializer(snippets, many=True, context={'request': request})
-        return Response(serializer.data)
+                return Response(serializer.data)
 
     serial_number = openapi.Parameter('serial_number', openapi.IN_QUERY, description="serial_number",
                                       type=openapi.TYPE_STRING)

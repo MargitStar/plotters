@@ -32,12 +32,13 @@ class CutoutView(APIView):
         if user.is_superuser:
             snippets = Cutout.objects.all()
             serializer = CutoutGetSerializer(snippets, many=True, context={'request': request})
+            return Response(serializer.data)
         elif user.groups.filter(name='Dealer').exists():
             pass
         else:
             snippets = Cutout.objects.filter(user=request.user).all()
             serializer = CutoutGetSerializer(snippets, many=True, context={'request': request})
-        return Response(serializer.data)
+            return Response(serializer.data)
 
     @swagger_auto_schema(operation_description='Do cutout', responses={200: CutoutPostSerializer()},
                          manual_parameters=[plotter_id, mold_id, amount])
