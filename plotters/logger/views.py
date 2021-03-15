@@ -118,7 +118,7 @@ class MoldView(APIView):
 class PlotterView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    @swagger_auto_schema(operation_description='Get mold statistics', responses={200: CutoutGetSerializer()})
+    @swagger_auto_schema(operation_description='Get plotter statistics', responses={200: CutoutGetSerializer()})
     def get(self, request):
         user = request.user
         if user.is_superuser:
