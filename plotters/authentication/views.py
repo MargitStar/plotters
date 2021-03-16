@@ -14,7 +14,8 @@ from drf_yasg.utils import swagger_auto_schema
 class RegisterApi(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
-    @swagger_auto_schema(operation_description='Registration of users', responses={200: RegisterSerializer()})
+    @swagger_auto_schema(operation_description='Registration of users, Adding Dealer by Admin and by User Dealer',
+                         responses={200: RegisterSerializer()})
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
