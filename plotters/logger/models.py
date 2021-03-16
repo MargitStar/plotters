@@ -84,4 +84,4 @@ class PlotterStatistics(models.Model):
 
 
 class PlotterStatisticsAdmin(admin.ModelAdmin):
-    list_display = ['plotter', 'ip', 'cutouts']
+    list_display = ['plotter', 'ip', 'cutouts', 'last_cutout_date']
